@@ -1,0 +1,936 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Join Cric Uploaders</title>
+  <link rel="icon" href="/sportlink.png" />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SMZXC121E6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-SMZXC121E6');
+  </script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #0a0a0f;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    #main-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: #000;
+    }
+
+    /* TELEGRAM BADGE */
+    .tg-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #1e88e5, #1565c0);
+      padding: 9px 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+      transition: transform .2s, box-shadow .2s;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .tg-badge:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(30,136,229,0.4);
+    }
+
+    .tg-badge-icon {
+      width: 30px;
+      height: 30px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      flex-shrink: 0;
+    }
+
+    .tg-badge-icon svg {
+      width: 17px;
+      height: 17px;
+      fill: #fff;
+    }
+
+    .tg-badge span { white-space: nowrap; }
+
+    /* CHANNEL PICKER */
+    #picker {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      background: #0a0a0f;
+      display: none;
+    }
+
+    .picker-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: linear-gradient(180deg,#0a0a0f 80%,transparent);
+      padding: 20px 16px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .picker-title {
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      flex-shrink: 0;
+    }
+
+    .picker-title span { color: #1e88e5; }
+
+    .picker-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .tg-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg,#1e88e5,#1565c0);
+      padding: 8px 13px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .tg-link svg {
+      width: 15px;
+      height: 15px;
+      fill: #fff;
+    }
+
+    .search-bar { padding: 0 16px 12px; }
+
+    .search-bar input {
+      width: 100%;
+      background: #1a1a2e;
+      border: 1px solid #2a2a40;
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .search-bar input::placeholder { color: #555; }
+    .search-bar input:focus { border-color: #1e88e5; }
+
+    .channel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
+      gap: 10px;
+      padding: 0 16px 24px;
+    }
+
+    .channel-card {
+      background: #141420;
+      border: 1px solid #1e1e30;
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      transition: background .15s,border-color .15s,transform .1s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .channel-card:active { transform: scale(.97); }
+
+    .channel-card:hover {
+      background: #1a1a2e;
+      border-color: #1e88e5;
+    }
+
+    .channel-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      object-fit: cover;
+      background: #1e1e30;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .channel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #1e88e5;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px #1e88e5;
+      margin: 0 13px;
+    }
+
+    .channel-info {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .channel-name {
+      color: #e0e0e0;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      word-break: break-word;
+    }
+
+    .channel-cat {
+      color: #4a6fa5;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    .no-results {
+      color: #444;
+      text-align: center;
+      padding: 40px 16px;
+      font-size: 14px;
+      grid-column: 1/-1;
+    }
+
+    /* LOADING */
+    #loadingSpinner {
+      position: absolute;
+      inset: 0;
+      background: #0a0a0f;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    #loadingSpinner.show { display: flex; }
+
+    #loadingSpinner::after {
+      content: '';
+      width: 42px;
+      height: 42px;
+      border: 3px solid rgba(30,136,229,0.2);
+      border-top-color: #1e88e5;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ERROR OVERLAY */
+    #streamError {
+      position: absolute;
+      inset: 0;
+      background: #0a0a0f;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 500;
+    }
+
+    #streamError.show { display: flex; }
+
+    .stream-error-card {
+      background: #141420;
+      border: 1px solid #1e1e30;
+      border-radius: 16px;
+      padding: 32px 24px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .stream-error-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg,#ff5252,#d32f2f);
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .stream-error-card h2 {
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .stream-error-card p {
+      color: #8e9baf;
+      font-size: 14px;
+      line-height: 1.55;
+      margin-bottom: 22px;
+      word-break: break-word;
+    }
+
+    .stream-error-card code {
+      background: #0a0a0f;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #4fc3f7;
+      font-family: 'Consolas',monospace;
+      font-size: 13px;
+    }
+
+    .stream-error-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .stream-error-btn {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: transform .15s,opacity .15s;
+    }
+
+    .stream-error-btn:active { transform: scale(.98); }
+
+    .stream-error-btn-primary {
+      background: linear-gradient(135deg,#1e88e5,#1565c0);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(30,136,229,0.25);
+    }
+
+    .stream-error-btn-primary:hover { opacity: .92; }
+
+    .stream-error-btn-secondary {
+      background: rgba(255,255,255,0.05);
+      color: #8e9baf;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .stream-error-btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+
+    /* TELEGRAM POPUP */
+    #tgOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999999;
+      padding: 20px;
+      animation: fadeInPopup .4s cubic-bezier(.25,.8,.25,1);
+    }
+
+    #tgOverlay.show { display: flex; }
+
+    #tgCard {
+      width: 100%;
+      max-width: 400px;
+      background: linear-gradient(160deg,#121821,#0a0c0f);
+      border: 1px solid rgba(79,195,247,.15);
+      border-radius: 24px;
+      padding: 36px 28px 28px;
+      box-shadow: 0 40px 80px rgba(0,0,0,.8);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #tgCard::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 20%,rgba(79,195,247,.04),transparent 60%);
+      pointer-events: none;
+    }
+
+    #tgIcon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg,#2AABEE,#229ED9);
+      box-shadow: 0 0 40px rgba(42,171,238,.2);
+      position: relative;
+      z-index: 1;
+    }
+
+    #tgIcon svg { width: 36px; height: 36px; }
+
+    #tgCard h2 {
+      margin: 0 0 8px;
+      font-size: clamp(1.3rem,2.5vw,1.8rem);
+      font-weight: 700;
+      color: #fff;
+      font-family: 'Segoe UI',system-ui,sans-serif;
+      position: relative;
+      z-index: 1;
+    }
+
+    #tgCard p {
+      margin: 0 0 24px;
+      color: #8e9baf;
+      font-size: clamp(.9rem,1.2vw,1.05rem);
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tgBtns {
+      display: flex;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tgBtn {
+      flex: 1;
+      height: 48px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: clamp(.85rem,1vw,1rem);
+      cursor: pointer;
+      transition: all .25s ease;
+      border: none;
+      font-family: 'Segoe UI',system-ui,sans-serif;
+    }
+
+    #joinNow {
+      background: linear-gradient(135deg,#4fc3f7,#2196f3);
+      color: #fff;
+      box-shadow: 0 6px 24px rgba(79,195,247,.25);
+    }
+
+    #joinNow:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(79,195,247,.35);
+    }
+
+    #joinedBtn {
+      background: rgba(255,255,255,.05);
+      color: #8e9baf;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    #joinedBtn:hover {
+      background: rgba(255,255,255,.08);
+      color: #fff;
+    }
+
+    @keyframes fadeInPopup {
+      from { opacity: 0; transform: scale(.95) translateY(12px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @media (max-width:480px) {
+      #tgCard { padding: 24px 18px 20px; border-radius: 20px; }
+      #tgIcon { width: 60px; height: 60px; }
+      #tgIcon svg { width: 30px; height: 30px; }
+      #tgCard h2 { font-size: 1.2rem; }
+      #tgCard p { font-size: .85rem; margin-bottom: 18px; }
+      .tgBtn { height: 42px; font-size: .8rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TELEGRAM BADGE -->
+  <a class="tg-badge" href="https://t.me/cricketuploaders" rel="noopener" target="_blank">
+    <div class="tg-badge-icon">
+      <svg viewBox="0 0 24 24">
+        <path d="M9.993 15.674l-.398 5.604c.57 0 .817-.245 1.113-.54l2.67-2.557 5.53 4.047c1.014.558 1.734.264 1.987-.939l3.6-16.86.001-.001c.3-1.4-.506-1.95-1.496-1.58L1.27 9.64c-1.37.53-1.35 1.29-.233 1.64l5.68 1.77L19.29 5.73c.59-.39 1.13-.175.69.215"></path>
+      </svg>
+    </div>
+    <span>Join Cric Uploaders</span>
+  </a>
+
+  <iframe
+    id="main-iframe"
+    allowfullscreen
+    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+    referrerpolicy="no-referrer-when-downgrade"
+    scrolling="no"
+    frameborder="0">
+  </iframe>
+
+  <div id="loadingSpinner" aria-hidden="true"></div>
+
+  <!-- STREAM ERROR -->
+  <div id="streamError" role="alert">
+    <div class="stream-error-card">
+      <div class="stream-error-icon" id="streamErrorIcon">⚠️</div>
+      <h2 id="streamErrorTitle">Stream Not Found</h2>
+      <p id="streamErrorMessage">The channel you're looking for is unavailable.</p>
+      <div class="stream-error-actions">
+        <button class="stream-error-btn stream-error-btn-primary" id="retryStreamBtn" type="button">Retry</button>
+        <a class="stream-error-btn stream-error-btn-secondary" href="?browse=1" id="browseChannelsBtn">Browse Channels</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHANNEL PICKER -->
+  <div id="picker">
+    <div class="picker-header">
+      <div class="picker-title">⚡ <span>Live</span> Channels</div>
+      <div class="picker-links">
+        <a class="tg-link" href="https://t.me/cricketuploaders" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24">
+            <path d="M9.993 15.674l-.398 5.604c.57 0 .817-.245 1.113-.54l2.67-2.557 5.53 4.047c1.014.558 1.734.264 1.987-.939l3.6-16.86.001-.001c.3-1.4-.506-1.95-1.496-1.58L1.27 9.64c-1.37.53-1.35 1.29-.233 1.64l5.68 1.77L19.29 5.73c.59-.39 1.13-.175.69.215"></path>
+          </svg>
+          Cric Uploaders
+        </a>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search channels…" autocomplete="off" />
+    </div>
+
+    <div class="channel-grid" id="channel-grid"></div>
+  </div>
+
+  <!-- TELEGRAM POPUP -->
+  <div id="tgOverlay">
+    <div id="tgCard">
+      <div id="tgIcon">
+        <svg viewBox="0 0 24 24" fill="white" width="36" height="36">
+          <path d="M23.05 2.1L19.6 21.3c-.26 1.15-.94 1.43-1.9.9l-5.26-3.88-2.54 2.45c-.28.28-.52.52-1.06.52l.38-5.4L19.9 5.8c.46-.4-.1-.63-.72-.23L7.5 13.03l-5.24-1.64c-1.14-.36-1.16-1.14.24-1.68L21.6.9c.95-.36 1.78.23 1.45 1.2z"></path>
+        </svg>
+      </div>
+      <h2>Cric Uploaders</h2>
+      <p>Get cricket updates, match links and the latest information delivered straight to your phone.</p>
+      <div class="tgBtns">
+        <button class="tgBtn" id="joinedBtn" type="button">Already Joined</button>
+        <button class="tgBtn" id="joinNow" type="button">Join Now</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var JSON_URL = 'https://sportlink-json.pages.dev/id.json';
+      var TELEGRAM_URL = 'https://t.me/cricketuploaders';
+
+      var iframe = document.getElementById('main-iframe');
+      var picker = document.getElementById('picker');
+      var streamErr = document.getElementById('streamError');
+      var errTitle = document.getElementById('streamErrorTitle');
+      var errMsgEl = document.getElementById('streamErrorMessage');
+      var errIcon = document.getElementById('streamErrorIcon');
+      var retryBtn = document.getElementById('retryStreamBtn');
+      var spinner = document.getElementById('loadingSpinner');
+
+      var allChannels = [];
+      var searchBound = false;
+
+      function normalise(raw) {
+        if (Array.isArray(raw)) return raw;
+        if (!raw || typeof raw !== 'object') return [];
+
+        var keys = ['channels','iframes','data','streams','links','items','results','list'];
+
+        for (var i = 0; i < keys.length; i++) {
+          if (Array.isArray(raw[keys[i]])) return raw[keys[i]];
+        }
+
+        if (raw.id !== undefined) return [raw];
+        return [];
+      }
+
+      function getStreamUrl(item) {
+        if (!item) return '';
+
+        var fields = [
+          'iframeSrc','iframe_src','iframe','src','url','link',
+          'embed','embedUrl','embed_url','stream','streamUrl',
+          'stream_url','player','playerUrl','player_url','source','file'
+        ];
+
+        for (var i = 0; i < fields.length; i++) {
+          var v = item[fields[i]];
+          if (typeof v === 'string' && v.trim()) return v.trim();
+        }
+
+        return '';
+      }
+
+      function findChannel(list, id) {
+        var wanted = String(id == null ? '' : id).trim().toLowerCase();
+        if (!wanted) return null;
+
+        for (var i = 0; i < list.length; i++) {
+          var item = list[i];
+          if (!item) continue;
+
+          var itemId = String(item.id == null ? '' : item.id).trim().toLowerCase();
+          if (itemId === wanted) return item;
+        }
+
+        return null;
+      }
+
+      function escapeHtml(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function showOverlayError(opts) {
+        iframe.style.display = 'none';
+        picker.style.display = 'none';
+        spinner.classList.remove('show');
+
+        errTitle.textContent = opts.title || 'Stream Not Found';
+        errMsgEl.innerHTML = opts.message || '';
+        errIcon.textContent = opts.icon || '⚠️';
+        retryBtn.style.display = opts.showRetry ? '' : 'none';
+
+        streamErr.classList.add('show');
+      }
+
+      function hideOverlayError() {
+        streamErr.classList.remove('show');
+      }
+
+      function showStreamNotFoundError(id) {
+        showOverlayError({
+          title: 'Stream Not Found',
+          icon: '⚠️',
+          message: 'Channel <code>' + escapeHtml(id) + '</code> was not found. It may be offline, removed, or the ID is incorrect.',
+          showRetry: true
+        });
+      }
+
+      function showStreamIncompleteError(id) {
+        showOverlayError({
+          title: 'Stream Data Incomplete',
+          icon: '⚠️',
+          message: 'Channel <code>' + escapeHtml(id) + '</code> exists but has no stream URL. Please try another channel.',
+          showRetry: true
+        });
+      }
+
+      function showNetworkError() {
+        showOverlayError({
+          title: 'Connection Error',
+          icon: '📡',
+          message: 'Failed to load stream data. Please check your internet connection and try again.',
+          showRetry: true
+        });
+      }
+
+      function showIframeError() {
+        showOverlayError({
+          title: 'Stream Failed to Load',
+          icon: '⚠️',
+          message: 'The stream failed to load. The source may be temporarily unavailable.',
+          showRetry: true
+        });
+      }
+
+      function renderChannels(channels) {
+        var grid = document.getElementById('channel-grid');
+        grid.innerHTML = '';
+
+        if (!channels || !channels.length) {
+          var empty = document.createElement('div');
+          empty.className = 'no-results';
+          empty.textContent = 'No channels found';
+          grid.appendChild(empty);
+          return;
+        }
+
+        var seen = {};
+
+        for (var i = 0; i < channels.length; i++) {
+          var ch = channels[i];
+          if (!ch) continue;
+
+          var name = ch.name || ch.title || 'Unnamed';
+          var key = String(ch.id) + '|' + name;
+
+          if (seen[key]) continue;
+          seen[key] = true;
+
+          var card = document.createElement('a');
+          card.className = 'channel-card';
+          card.href = '?id=' + encodeURIComponent(ch.id);
+
+          if (ch.logourl || ch.logo) {
+            var img = document.createElement('img');
+            img.className = 'channel-logo';
+            img.src = ch.logourl || ch.logo;
+            img.alt = '';
+            img.loading = 'lazy';
+
+            img.onerror = (function (image) {
+              return function () {
+                var dot = document.createElement('div');
+                dot.className = 'channel-dot';
+                if (image.parentNode) image.parentNode.replaceChild(dot, image);
+              };
+            })(img);
+
+            card.appendChild(img);
+          } else {
+            var dot = document.createElement('div');
+            dot.className = 'channel-dot';
+            card.appendChild(dot);
+          }
+
+          var info = document.createElement('div');
+          info.className = 'channel-info';
+
+          var nameEl = document.createElement('div');
+          nameEl.className = 'channel-name';
+          nameEl.textContent = name;
+          info.appendChild(nameEl);
+
+          if (ch.category) {
+            var catEl = document.createElement('div');
+            catEl.className = 'channel-cat';
+            catEl.textContent = ch.category;
+            info.appendChild(catEl);
+          }
+
+          card.appendChild(info);
+          grid.appendChild(card);
+        }
+      }
+
+      function showPicker(channels) {
+        iframe.style.display = 'none';
+        spinner.classList.remove('show');
+        hideOverlayError();
+        picker.style.display = 'block';
+
+        allChannels = channels || [];
+        renderChannels(allChannels);
+
+        if (!searchBound) {
+          searchBound = true;
+
+          document.getElementById('search-input').addEventListener('input', function (e) {
+            var q = e.target.value.trim().toLowerCase();
+
+            if (!q) {
+              renderChannels(allChannels);
+              return;
+            }
+
+            var filtered = allChannels.filter(function (c) {
+              return (c.name || '').toLowerCase().indexOf(q) !== -1 ||
+                     (c.category || '').toLowerCase().indexOf(q) !== -1;
+            });
+
+            renderChannels(filtered);
+          });
+        }
+      }
+
+      function loadStreamById(id) {
+        picker.style.display = 'none';
+        hideOverlayError();
+        iframe.style.display = 'none';
+        spinner.classList.add('show');
+
+        fetch(JSON_URL, { cache: 'no-cache', credentials: 'omit' })
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function (raw) {
+            var list = normalise(raw);
+            var target = findChannel(list, id);
+
+            if (!target) {
+              showStreamNotFoundError(id);
+              return;
+            }
+
+            var url = getStreamUrl(target);
+
+            if (!url) {
+              showStreamIncompleteError(id);
+              return;
+            }
+
+            spinner.classList.remove('show');
+            hideOverlayError();
+            iframe.style.display = 'block';
+            iframe.src = url;
+            picker.style.display = 'none';
+
+            if (target.hit) {
+              try {
+                fetch(target.hit).catch(function () {});
+              } catch (e) {}
+            }
+          })
+          .catch(function (err) {
+            console.error('Fetch error:', err);
+            showNetworkError();
+          });
+      }
+
+      iframe.addEventListener('error', function () {
+        showIframeError();
+      });
+
+      document.addEventListener('DOMContentLoaded', function () {
+        var params = new URLSearchParams(window.location.search);
+        var rawId = params.get('id');
+        var browse = params.get('browse');
+
+        var id = rawId == null ? '' : String(rawId).trim();
+
+        if (id) {
+          loadStreamById(id);
+        } else if (browse === '1' || browse === 'true') {
+          picker.style.display = 'block';
+          spinner.classList.add('show');
+
+          fetch(JSON_URL, { cache: 'no-cache', credentials: 'omit' })
+            .then(function (res) {
+              if (!res.ok) throw new Error('HTTP ' + res.status);
+              return res.json();
+            })
+            .then(function (raw) {
+              spinner.classList.remove('show');
+              showPicker(normalise(raw));
+            })
+            .catch(function (err) {
+              console.error('Fetch error:', err);
+              spinner.classList.remove('show');
+              picker.style.display = 'block';
+
+              var grid = document.getElementById('channel-grid');
+              grid.innerHTML = '<div class="no-results">Error loading channels. Check your connection and refresh.</div>';
+            });
+        } else {
+          window.location.replace(TELEGRAM_URL);
+          return;
+        }
+
+        retryBtn.addEventListener('click', function () {
+          var currentId = new URLSearchParams(window.location.search).get('id');
+
+          if (currentId && currentId.trim()) {
+            loadStreamById(currentId.trim());
+          } else {
+            window.location.href = '?browse=1';
+          }
+        });
+
+        var tgOverlay = document.getElementById('tgOverlay');
+
+        function closePopup() {
+          tgOverlay.classList.remove('show');
+        }
+
+        if (id) {
+          setTimeout(function () {
+            tgOverlay.classList.add('show');
+          }, 3000);
+        }
+
+        document.getElementById('joinNow').onclick = function () {
+          window.open(TELEGRAM_URL, '_blank', 'noopener');
+          closePopup();
+        };
+
+        document.getElementById('joinedBtn').onclick = closePopup;
+
+        tgOverlay.addEventListener('click', function (e) {
+          if (e.target === tgOverlay) closePopup();
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && tgOverlay.classList.contains('show')) {
+            closePopup();
+          }
+        });
+      });
+    })();
+  </script>
+
+  <script src="https://pl31358401.profitableratecpmnetwork.com/a3/81/41/a38141b4ff99f6ef8dbf9dc5f76bd86b.js"></script>
+
+</body>
+</html>
